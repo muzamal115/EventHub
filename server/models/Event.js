@@ -1,14 +1,16 @@
 import mongoose from "mongoose";
 
-const eventSchema=new mongoose.Schema({
 
+const eventSchema=new mongoose.Schema({
     title:{
         type:String,
-        required:true
+        required:true,
+          trim: true
     },
     description:{
         type:String,
-        required:true
+        required:true,
+        trim: true
     },
     date:{
         type:Date,
@@ -16,7 +18,8 @@ const eventSchema=new mongoose.Schema({
     },
     location:{
         type:String,
-        required:true
+        required:true,
+        trim: true
     },
     category:{
         type:String,

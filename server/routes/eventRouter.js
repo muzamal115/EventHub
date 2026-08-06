@@ -10,6 +10,8 @@ const eventRouter=express.Router()
 // Get all events
 eventRouter.get('/',authMiddleware,getAllEvents)
 
+
+
 //Get event by id
 eventRouter.get('/:id',authMiddleware,getEventById)
 

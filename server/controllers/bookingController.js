@@ -73,7 +73,7 @@ return res.status(201).json({message:"Booking created. Please check your email f
 export const getMyBookings=async(req,res)=>{
 
     try {
-        const bookings=await Booking.find({userId:req.user._id}).populate("eventId")
+        const bookings=await Booking.find({userId:req.user._id}).populate("eventId").sort({ createdAt: -1 });
         res.json(bookings)
     } catch (error) {
          return res.status(500).json({error:error.message})
@@ -100,8 +100,10 @@ try {
     }
 booking.status="confirmed";
 if(paymentStatus){
-    booking.paymentStatus=paymentStatus
+booking.paymentStatus=paymentStatus
 }
+
+
 await  booking.save()
 event.availableSeats -=1
 await event.save()
@@ -125,14 +127,24 @@ export const cancelBooking=async(req,res)=>{
     if(booking.userId.toString()!==req.user._id.toString()){
         return res.status(403).json({error:"Unauthorized"})
     }
+    
+      // Already cancelled
+    if (booking.status === "cancelled") {
+      return res.status(400).json({
+        error: "Booking is already cancelled",
+      });
+    }
+     // Check previous status BEFORE changing it
+    const wasConfirmed = booking.status === "confirmed";
+
     booking.status='cancelled',
     booking.save()
-    if(booking.status==='confirmed'){
+    if(wasConfirmed){
         const event=await Event.findById(booking.eventId._id)
-        event.availableSeats ++
+         event.availableSeats += 1;
        await event.save()
     }
-   await booking.deleteOne();
+//    await booking.deleteOne();
     return res.status(200).json({message:"Booking cancelled"})
 
     } catch (error) {
@@ -141,4 +153,18 @@ export const cancelBooking=async(req,res)=>{
 
 
 
+}
+
+export const getAllBookings=async(req,res)=>{
+
+    try {
+        const bookings=await Booking.find().populate("userId","name email").populate("eventId").sort({createdAt:-1});
+        return res.status(200).json(bookings)
+    
+        
+    } catch (error) {
+         return res.status(500).json({
+            error:error.message
+         })
+    }
 }

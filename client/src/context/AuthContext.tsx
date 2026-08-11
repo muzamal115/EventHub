@@ -1,4 +1,4 @@
-import { createContext,  useEffect, useState, type ReactNode } from "react";
+import { createContext,  useContext,  useEffect, useState, type ReactNode } from "react";
 import type { User } from "../types/user";
 import api from "../utils/axios";
 
@@ -26,16 +26,26 @@ interface AuthContextType {
     login: (email: string, password: string) => Promise<ExistUserResponse>,
     logout:()=>void,
     verifyOTP: (email: string, otp: string) => Promise<ExistUserResponse>,
-     register: (name: string, email: string, password: string) => Promise<RegisterResponse>
+     registerUser: (name: string, email: string, password: string) => Promise<RegisterResponse>
 }
 
 
 
 
 export const AuthContext=createContext<AuthContextType | null>(null)
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+
+  return context;
+};
 const AuthProvider=({children}:AuthProviderProps)=>{
 const [user,setUser]=useState<User | null>(null)
-const [loading,setLoading]=useState(false)
+const [loading,setLoading]=useState(true)
 
 useEffect(()=>{
 
@@ -56,16 +66,18 @@ useEffect(()=>{
    
     
 },[])
-const register=async(name:string,email:string,password:string)=>{
+const registerUser=async(name:string,email:string,password:string)=>{
  
     try {
         setLoading(true)
          
         const {data}=await api.post<RegisterResponse>('/auth/register',{name,email,password})
+        console.log(data)
          return data
   
-    } catch (error) {
-         throw error;
+    } catch (error:any) {
+          console.log("Backend Error:", error.response?.data);
+    throw error;
     }finally{
         setLoading(false)
     }
@@ -83,6 +95,7 @@ const login=async(email:string,password:string)=>{
          setUser(data.user)
          localStorage.setItem("user",JSON.stringify(data.user))
          localStorage.setItem("token",data.token)
+         console.log(data)
          return data
     } catch (error) {
         console.log("Login failed:",error)
@@ -129,7 +142,7 @@ const logout=()=>{
         login,
         logout,
         verifyOTP,
-        register
+        registerUser
 
     }
     return <AuthContext.Provider value={value}>

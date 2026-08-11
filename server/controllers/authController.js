@@ -8,13 +8,13 @@ export const registerUser=async(req,res)=>{
 try { 
     const {name,email,password}=req.body
     if(!name || !email || !password){
-    return res.status(400).json({message:"All fields are required."})}
+    return res.status(400).json({error:"All fields are required."})}
     const existUser= await User.findOne({email})
     if(existUser){
-        return res.status(400).json({message:"User already exist"})
+        return res.status(400).json({error:"User already exist"})
     } 
     const hashPassword=await bcrypt.hash(password,10)
-   await User.create({
+  await User.create({
     name,
     email,
     password:hashPassword
@@ -56,8 +56,8 @@ export const loginUser=async(req,res)=>{
   await OTP.deleteMany({email,action:'account-verification'})
   await OTP.create({email,otp,action:'account-verification'})
   await sendEmail(email,otp,'account-verification')
-return res.status(400).json({
-    error:"Account not verified. A new OTP has been sent to your email. "
+return res.status(403).json({
+    error:"Account not verified. A new OTP has been sent to your email. ", requiresVerification: true,email
 })
      }
      const token=generateToken(existUser._id,existUser.role)
@@ -98,10 +98,12 @@ export const verifyOtp=async(req,res)=>{
         const token=generateToken(user._id,user.role)
        return res.json({
             message:"Account verified successfully. You can now log in.",
-            _id:user._id,
+            user:{
+             _id:user._id,
             name:user.name,
             email:user.email,
             role:user.role,
+            },
             token
         })
         

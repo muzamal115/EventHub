@@ -7,7 +7,7 @@ import HeroImage from '../assets/hero-image.png'
 import {  useState } from 'react'
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from '../context/AuthContext'
-import { email } from 'zod'
+
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);

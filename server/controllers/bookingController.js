@@ -11,7 +11,7 @@ const generateOtp=()=>{
 
   //send otp
   export const sendBookingOtp=async(req,res)=>{
- console.log("sendBookingOtp called");
+ 
     try {
 
          const otp=generateOtp()

@@ -72,7 +72,7 @@ const registerUser=async(name:string,email:string,password:string)=>{
         setLoading(true)
          
         const {data}=await api.post<RegisterResponse>('/auth/register',{name,email,password})
-        console.log(data)
+       
          return data
   
     } catch (error:any) {
@@ -91,11 +91,11 @@ const login=async(email:string,password:string)=>{
         setLoading(true)
     try {
          const {data} = await api.post<ExistUserResponse >('/auth/login',{email,password})
-        console.log(data)
+        
          setUser(data.user)
          localStorage.setItem("user",JSON.stringify(data.user))
          localStorage.setItem("token",data.token)
-         console.log(data)
+         
          return data
     } catch (error) {
         console.log("Login failed:",error)

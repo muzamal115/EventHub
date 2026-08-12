@@ -9,7 +9,10 @@ import bookingRouter from "./routes/bookingRouter.js"
 
 const app=express()
 app.use(cors({
-    origin:"http://localhost:5173",
+  origin: [
+    "http://localhost:5173",
+    "https://eventhub-mg.netlify.app"
+  ]
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));

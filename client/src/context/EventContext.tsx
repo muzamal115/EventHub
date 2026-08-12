@@ -81,7 +81,7 @@ setEvents((prev)=>[data.event,...prev])
 return data.event
         
     } catch (error) {
-       
+        console.error("Create event error:", error);
         throw error
     }
 
